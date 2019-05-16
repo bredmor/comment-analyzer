@@ -1,5 +1,5 @@
 {
-    "name": "bredmor/CommentAnalyzer",
+    "name": "bredmor/comment-analyzer",
     "description": "Google Perspective Comment Analyzer API for PHP",
     "keywords": ["comment analyzer","moderation","perspective","api"],
     "homepage": "https://github.com/bredmor/comment-analyzer",
