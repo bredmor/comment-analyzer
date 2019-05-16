@@ -22,20 +22,20 @@ use bredmor\CommentAnalyzer\Analyzer;
 $key = 'your_api_key';
 
 try {
-    // Instantiate API and define attribute model
+    // Instantiate API and define an attribute model
     $api = new Analyzer($key);
     $api->addAttributeModel(Analyzer::MODEL_TOXICITY);
 } catch (Exception $e) {
     echo 'Error: ' . $e->getMessage();
 }
 
-// Build your comment from text
+// Build your comments from text
 $comment = new Comment('Hello my good sir, how are you this fine evening?');
 $comment2 = new Comment('You suck, jerkwad.');
 
 
 try {
-    // Analyze the comment and fetch a score for the attribute model you want
+    // Analyze the comments and fetch a score for the attribute model you want
     $api->analyze($comment);
     $scoreObj = $comment->getSummaryScore(Analyzer::MODEL_TOXICITY);
     if($scoreObj) {
@@ -81,7 +81,7 @@ CommentAnalyzer is tested on PHP `7.3` and later.
 
 ## Authors
 
-- Morgan Breden  | [GitHub](https://github.com/bredmor)  | [Twitter](https://twitter.com/bredmor) | <morganbreden@gmail.com>
+- Morgan Breden  | [GitHub](https://github.com/bredmor)  | [Twitter](https://twitter.com/bredmor)
 
 ## Contributing
 
