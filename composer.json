@@ -1,0 +1,28 @@
+{
+    "name": "bredmor/CommentAnalyzer",
+    "description": "Google Perspective Comment Analyzer API for PHP",
+    "keywords": ["comment analyzer","moderation","perspective","api"],
+    "homepage": "https://github.com/bredmor/comment-analyzer",
+    "license": "GPL-3.0-or-later",
+    "authors": [
+        {
+            "name": "Morgan Breden",
+            "email": "morganbreden@gmail.com"
+        }
+    ],
+    "require":  {
+        "php": ">=7.3",
+        "guzzlehttp/guzzle": "~6.0",
+        "psr/log": "^1.1"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "bredmor\\CommentAnalyzer\\": "src/"
+        }
+    },
+    "scripts": {
+        "test": "./vendor/bin/phpunit --bootstrap vendor/autoload.php --testdox tests"
+    }
+}
