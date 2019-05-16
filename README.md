@@ -9,7 +9,7 @@ CommentAnalyzer is an API Wrapper for the [Google Perspective Comment Analyzer A
 Clone the repository from GitHub or unzip into your vendor directory. CommentAnalyzer is packaged for [PSR-4](https://www.php-fig.org/psr/psr-4/) autoloading.
 
 ### From Composer:
-`composer require bredmor/CommentAnalyzer`
+`composer require bredmor/comment-analyzer`
 
 ### Basic Usage:
 
