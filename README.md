@@ -13,11 +13,15 @@ Clone the repository from GitHub or unzip into your vendor directory. CommentAna
 
 ### Basic Usage:
 
-CommentAnalyzer accepts text in the form of `Comment` objects that are constructed with a single argument - the text you wish to analyze. 
+CommentAnalyzer accepts text in the form of `Comment` objects that are constructed with a single argument - the text you wish to analyze.
 
-Pass an instance of a Comment object to the `Analyzer` object's `analyze` method, after instantiating and configuring it. This will start the API call process.
+Instantiate the `Analyzer` object, providing it your Perspective API key and an optional [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant `LoggerInterface`. Then add the attribute models you wish to score comments on by calling the instance's `addAttributeModel()` method. **Note**: You *must* provide at least one attribute model for scoring before calling the `analyze()` method or an `AnalyzerException` will be thrown.
 
-After successfully completing the call, the Comment object, which is passed by reference, will be filled out with `SummaryScore` and `SpanScore` objects representing the summary and span scores data returned by the API, respectively. These objects are accessed by calling the Comment object's `getSummaryScore` or `getSpanScore` methods with one required argument - one of the attribute models you provided to the Analyzer instance.
+Pass an instance of a Comment object to the `Analyzer` object's analyze method. This will start the API call process.
+
+**Note**: If you wish to use this library in an asynchronus manner, the Comment object holds a state variable of `STATE_CREATED`, `STATE_SUBMITTED` and `STATE_ANALYZED`. You can check for the instance's current state via its `getState()` method, to ensure you aren't trying to process the same comment via multiple threads.
+
+After successfully completing the call, the Comment object, which is passed by reference, will be filled out with `SummaryScore` and `SpanScore` objects representing the summary and span scores data returned by the API, respectively. These objects are accessed by calling the Comment object's `getSummaryScore()` or `getSpanScore()` methods with one required argument - one of the attribute models you provided to the Analyzer instance.
 
 #### Example:
 ```$php
@@ -70,7 +74,7 @@ Please see the [Perspective API Documentation](https://github.com/conversationai
 ## Error Handling
 Every part of the library that relies on input or proper function use will throw a `CommentException` or `AnalyzerException` as appropriate when an error is encountered.
 
-The Analyzer object accepts an optional [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant `LoggerInterface`, which logs a `critical` error when the API is unreachable or responds with a non-200 HTTP error code.
+The Analyzer object accepts an optional PSR-3 compliant `LoggerInterface`, which logs a `critical` error when the API is unreachable or responds with a non-200 HTTP error code.
 
 ## API Support
 
