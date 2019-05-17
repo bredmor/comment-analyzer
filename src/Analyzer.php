@@ -156,15 +156,22 @@ class Analyzer {
 
     private function doApiCall($request_data): string {
         $client = new Client();
-        $response = $client->post(static::API_URL . '?key=' . $this->api_key, [
-            RequestOptions::JSON => $request_data
-        ]);
+        try {
+            $response = $client->post(static::API_URL . '?key=' . $this->api_key, [
+                RequestOptions::JSON => $request_data
+            ]);
+        } catch(Exception $e) {
+            if($this->logger) {
+                $this->logger->critical(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));
+            }
+            throw new AnalyzerException(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));   
+        }
 
         if($response->getStatusCode() != 200) {
             if($this->logger) {
-                $this->logger->error(sprintf('Call to Perspective API Failed. Response Body: %s', $response->getBody()));
+                $this->logger->critical(sprintf('Call to Perspective API Failed with status code %s. Response: %s',$response->getStatusCode() , $response->getBody()));
             }
-            throw new AnalyzerException('Call to Perspective API Failed');
+            throw new AnalyzerException(sprintf('Call to Perspective API Failed: HTTP %s', $response->getStatusCode()));
         }
 
         return $response->getBody();
