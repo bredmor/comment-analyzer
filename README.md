@@ -13,6 +13,13 @@ Clone the repository from GitHub or unzip into your vendor directory. CommentAna
 
 ### Basic Usage:
 
+CommentAnalyzer accepts text in the form of `Comment` objects that are constructed with a single argument - the text you wish to analyze. 
+
+Pass an instance of a Comment object to the `Analyzer` object's `analyze` method, after instantiating and configuring it. This will start the API call process.
+
+After successfully completing the call, the Comment object, which is passed by reference, will be filled out with `SummaryScore` and `SpanScore` objects representing the summary and span scores data returned by the API, respectively. These objects are accessed by calling the Comment object's `getSummaryScore` or `getSpanScore` methods with one required argument - one of the attribute models you provided to the Analyzer instance.
+
+#### Example:
 ```$php
 <?php
 require './vendor/autoload.php';
@@ -59,6 +66,11 @@ Comment 2 Toxicity rating: 95%
 ```
 
 Please see the [Perspective API Documentation](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md) for reference on available attribute models and score meanings.
+
+## Error Handling
+Every part of the library that relies on input or proper function use will throw a `CommentException` or `AnalyzerException` as appropriate when an error is encountered.
+
+The Analyzer object accepts an optional [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant LoggerInterface, which logs a `critical` error when the API is unreachable or responds with a non-200 HTTP error code.
 
 ## API Support
 
