@@ -70,7 +70,7 @@ Please see the [Perspective API Documentation](https://github.com/conversationai
 ## Error Handling
 Every part of the library that relies on input or proper function use will throw a `CommentException` or `AnalyzerException` as appropriate when an error is encountered.
 
-The Analyzer object accepts an optional [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant LoggerInterface, which logs a `critical` error when the API is unreachable or responds with a non-200 HTTP error code.
+The Analyzer object accepts an optional [PSR-3](https://www.php-fig.org/psr/psr-3/) compliant `LoggerInterface`, which logs a `critical` error when the API is unreachable or responds with a non-200 HTTP error code.
 
 ## API Support
 
