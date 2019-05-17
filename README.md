@@ -2,6 +2,8 @@
 
 CommentAnalyzer is an API Wrapper for the [Google Perspective Comment Analyzer API](https://console.developers.google.com/apis/api/commentanalyzer.googleapis.com/overview)
 
+This package enables you to programmatically scan any kind of text written in supported languages for various metrics associated with negative tones and apply the resulting score, such as automatically hiding harassing or explicit comments from a blog or social media platform.
+
 ## Installation / Usage
 
 
