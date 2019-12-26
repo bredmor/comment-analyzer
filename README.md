@@ -11,7 +11,7 @@ This package enables you to programmatically scan any kind of text written in su
 Clone the repository from GitHub or unzip into your vendor directory. CommentAnalyzer is packaged for [PSR-4](https://www.php-fig.org/psr/psr-4/) autoloading.
 
 ### From Composer:
-`composer require bredmor/comment-analyzer`
+`composer require bredmor/comment-analyzer:0.x`
 
 ### Basic Usage:
 
