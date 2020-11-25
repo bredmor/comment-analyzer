@@ -3,6 +3,7 @@ namespace bredmor\CommentAnalyzer;
 
 use bredmor\CommentAnalyzer\Exception\AnalyzerException;
 use bredmor\CommentAnalyzer\Exception\CommentException;
+use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
@@ -10,6 +11,7 @@ use GuzzleHttp\RequestOptions;
 class Analyzer {
     private $api_key;
     private $logger;
+    private $client;
     private $experimental = false;
     private $attribute_models = [];
     private $languages = []; // By default, the API will try to auto-detect the language used in each comment
@@ -38,9 +40,15 @@ class Analyzer {
         'FLIRTATION'
     ];
 
-    public function __construct($api_key, LoggerInterface $logger = null) {
+    public function __construct($api_key, LoggerInterface $logger = null, ClientInterface $client = null) {
         $this->api_key = $api_key;
         $this->logger = $logger;
+
+        if($client) {
+            $this->client = $client;
+        } else {
+            $this->client = new Client();
+        }
     }
 
     /**
@@ -155,9 +163,8 @@ class Analyzer {
     }
 
     private function doApiCall($request_data): string {
-        $client = new Client();
         try {
-            $response = $client->post(static::API_URL . '?key=' . $this->api_key, [
+            $response = $this->client->post(static::API_URL . '?key=' . $this->api_key, [
                 RequestOptions::JSON => $request_data
             ]);
         } catch(Exception $e) {

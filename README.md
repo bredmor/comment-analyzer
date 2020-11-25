@@ -73,6 +73,12 @@ Comment 2 Toxicity rating: 95%
 
 Please see the [Perspective API Documentation](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md) for reference on available attribute models and score meanings.
 
+## SSL & Other Communication Issues
+Starting with version 1.0, the `Analyzer` constructor accepts `GuzzleHttp\ClientInterface` as an optional 3rd parameter. This allows for
+passing an alternative HTTP Client instance with SSL disabled, a certificate specified or other concerns not handled by default. 
+
+If this parameter is left null/unset, the library will continue to use the default Guzzle client as in previous versions.
+
 ## Error Handling
 Every part of the library that relies on input or proper function use will throw a `CommentException` or `AnalyzerException` as appropriate when an error is encountered.
 
