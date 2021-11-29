@@ -13,31 +13,73 @@ class Analyzer {
     private $logger;
     private $client;
     private $experimental = false;
+    private $nyt = false;
     private $attribute_models = [];
     private $languages = []; // By default, the API will try to auto-detect the language used in each comment
 
     const API_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 
+    /**
+     * Model Information: https://developers.perspectiveapi.com/s/about-the-api-attributes-and-languages
+     */
     const MODEL_TOXICITY = 'TOXICITY';
     const MODEL_SEVERE_TOXICITY = 'SEVERE_TOXICITY';
-    const MODELS = [
-        'TOXICITY',
-        'SEVERE_TOXICITY'
-    ];
-
     const MODEL_IDENTITY_ATTACK = 'IDENTITY_ATTACK';
     const MODEL_INSULT = 'INSULT';
     const MODEL_PROFANITY = 'PROFANITY';
     const MODEL_THREAT = 'THREAT';
-    const MODEL_SEXUALLY_EXPLICIT = 'SEXUALLY_EXPLICIT';
-    const MODEL_FLIRTATION = 'FLIRTATION';
-    const EXPERIMENTAL_MODELS = [
+    const MODELS = [
+        'TOXICITY',
+        'SEVERE_TOXICITY',
         'IDENTITY_ATTACK',
         'INSULT',
         'PROFANITY',
-        'THREAT',
+        'THREAT'
+    ];
+
+    const MODELTYPE_EXPERIMENTAL = 'experimental';
+    const MODELTYPE_NYT = 'nyt';
+    const OPTIONAL_MODEL_TYPES = [
+        self::MODELTYPE_EXPERIMENTAL,
+        self::MODELTYPE_NYT
+    ];
+
+    const MODEL_TOXICITY_EXPERIMENTAL = 'TOXICITY_EXPERIMENTAL';
+    const MODEL_SEVERE_TOXICITY_EXPERIMENTAL = 'SEVERE_TOXICITY_EXPERIMENTAL';
+    const MODEL_IDENTITY_ATTACK_EXPERIMENTAL = 'IDENTITY_ATTACK_EXPERIMENTAL';
+    const MODEL_INSULT_EXPERIMENTAL = 'INSULT_EXPERIMENTAL';
+    const MODEL_PROFANITY_EXPERIMENTAL = 'PROFANITY_EXPERIMENTAL';
+    const MODEL_THREAT_EXPERIMENTAL = 'THREAT_EXPERIMENTAL';
+    const MODEL_SEXUALLY_EXPLICIT_EXPERIMENTAL = 'SEXUALLY_EXPLICIT';
+    const MODEL_FLIRTATION_EXPERIMENTAL = 'FLIRTATION';
+    const EXPERIMENTAL_MODELS = [
+        'TOXICITY_EXPERIMENTAL',
+        'SEVERE_TOXICITY_EXPERIMENTAL',
+        'IDENTITY_ATTACK_EXPERIMENTAL',
+        'INSULT_EXPERIMENTAL',
+        'PROFANITY_EXPERIMENTAL',
+        'THREAT_EXPERIMENTAL',
         'SEXUALLY_EXPLICIT',
-        'FLIRTATION'
+        'FLIRTATION',
+    ];
+
+    const MODEL_NYT_ATTACK_ON_AUTHOR = 'ATTACK_ON_AUTHOR';
+    const MODEL_NYT_ATTACK_ON_COMMENTER = 'ATTACK_ON_COMMENTER';
+    const MODEL_NYT_INCOHERENT = 'INCOHERENT';
+    const MODEL_NYT_INFLAMMATORY = 'INFLAMMATORY';
+    const MODEL_NYT_LIKELY_TO_REJECT = 'LIKELY_TO_REJECT';
+    const MODEL_NYT_OBSCENE = 'OBSCENE';
+    const MODEL_NYT_SPAM = 'SPAM';
+    const MODEL_NYT_UNSUBSTANTIAL = 'UNSUBSTANTIAL';
+    const NYT_MODELS = [
+        'ATTACK_ON_AUTHOR',
+        'ATTACK_ON_COMMENTER',
+        'INCOHERENT',
+        'INFLAMMATORY',
+        'LIKELY_TO_REJECT',
+        'OBSCENE',
+        'SPAM',
+        'UNSUBSTANTIAL'
     ];
 
     public function __construct($api_key, LoggerInterface $logger = null, ClientInterface $client = null) {
@@ -70,22 +112,50 @@ class Analyzer {
     }
 
     /**
-     * Enables the use of experimental scoring models
-     * WARNING: These models are not as robustly trained as the supported models and should be used with caution.
+     * Get array of models for a given model type
+     * @param string $type
+     * @return string[]
      */
-    public function enableExperimentalModels(): void {
-        $this->experimental = true;
+    private function getModelsForType(string $type): array
+    {
+        return match($type) {
+            'experimental'  => self::EXPERIMENTAL_MODELS,
+            'nyt'           => self::NYT_MODELS
+        };
+    }
+
+    /**
+     * Enables the use of optional model types, such as experimental scoring models
+     * WARNING: These models are not as robustly trained as the supported models and should be used with caution.
+     * @throws AnalyzerException
+     * @param ...$types
+     */
+    public function enableModelType(...$types): void {
+        foreach($types as $type) {
+            if(!in_array($type, self::OPTIONAL_MODEL_TYPES)) {
+                throw new AnalyzerException(sprintf('Trying to enable an unsupported model type: "%s".', $type));
+            }
+
+            $this->{$type} = true;
+        }
     }
 
     /**
      * Disables the use of experimental scoring models and removes any enabled experimental scoring models currently
      * being used by the API instance.
      */
-    public function disableExperimentalModels(): void {
-        $this->experimental = false;
-        foreach($this->attribute_models as $model => $null) {
-            if(in_array($model, static::EXPERIMENTAL_MODELS)) {
-                unset($this->attribute_models[$model]);
+    public function disableModelType(...$types): void {
+        foreach($types as $type) {
+            if(!in_array($type, self::OPTIONAL_MODEL_TYPES)) {
+                throw new AnalyzerException(sprintf('Trying to disable an unsupported model type: "%s".', $type));
+            }
+
+            $this->{$type} = false;
+
+            foreach($this->getModelsForType($type) as $model) {
+                if(in_array($model, $this->attribute_models)) {
+                    unset($this->attribute_models[$model]);
+                }
             }
         }
     }
@@ -97,16 +167,17 @@ class Analyzer {
      */
     public function addAttributeModel($model): void {
         $enabled_models = static::MODELS;
-        if($this->experimental === true) {
-            $enabled_models = array_merge($enabled_models, static::EXPERIMENTAL_MODELS);
+
+        foreach(self::OPTIONAL_MODEL_TYPES as $model_type) {
+            if($this->{$model_type} === true) {
+                $enabled_models = array_merge($enabled_models, $this->getModelsForType($model_type));
+            }
         }
 
         if(!in_array($model, $enabled_models)) {
             throw new AnalyzerException(sprintf('Trying to enable an unsupported model: "%s".', $model));
         }
 
-        // Could throw a warning when trying to add a model that's already added but I don't see a situation in which
-        // doing so would be unwanted behavior since the result would not change.
         $this->attribute_models[$model] = null;
     }
 
@@ -117,14 +188,16 @@ class Analyzer {
      * @throws AnalyzerException
      */
     public function removeAttributeModel($model): void {
-        $models = array_merge(static::MODELS, static::EXPERIMENTAL_MODELS);
+        $models = static::MODELS;
+
+        foreach(self::OPTIONAL_MODEL_TYPES as $model_type) {
+            $models = array_merge($models, $model_type);
+        }
 
         if(!in_array($model, $models)) {
             throw new AnalyzerException(sprintf('Trying to remove an unsupported model: "%s".', $model));
         }
 
-        // Could throw a warning when trying to remove a model that's already removed but I don't see a situation in which
-        // doing so would be unwanted behavior since the result would not change.
         if(in_array($model, $this->attribute_models)) {
             unset($this->attribute_models[$model]);
         }
@@ -162,12 +235,15 @@ class Analyzer {
         return $api_data;
     }
 
+    /**
+     * @throws AnalyzerException
+     */
     private function doApiCall($request_data): string {
         try {
             $response = $this->client->post(static::API_URL . '?key=' . $this->api_key, [
                 RequestOptions::JSON => $request_data
             ]);
-        } catch(Exception $e) {
+        } catch(\Exception $e) {
             if($this->logger) {
                 $this->logger->critical(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));
             }

@@ -46,9 +46,17 @@ class Comment {
      * @throws CommentException
      */
     public function getSummaryScore($model): ?SummaryScore {
-        if($this->state !== static::STATE_ANALYZED) throw new CommentException('Trying to get summary score from a comment that has not been analyzed.');
-        if(!in_array($model, Analyzer::MODELS)) throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
-        if(!array_key_exists($model, $this->summary_scores)) return null;
+        if($this->state !== static::STATE_ANALYZED) {
+            throw new CommentException('Trying to get summary score from a comment that has not been analyzed.');
+        }
+
+        if(!in_array($model, array_merge(Analyzer::MODELS, Analyzer::EXPERIMENTAL_MODELS, Analyzer::NYT_MODELS))) {
+            throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
+        }
+
+        if(!array_key_exists($model, $this->summary_scores)) {
+            return null;
+        }
 
         return $this->summary_scores[$model];
     }
@@ -59,9 +67,17 @@ class Comment {
      * @throws CommentException
      */
     public function getSpanScores($model): ?SpanScore {
-        if($this->state !== static::STATE_ANALYZED) throw new CommentException('Trying to get span score from a comment that has not been analyzed.');
-        if(!in_array($model, array_merge(Analyzer::MODELS, Analyzer::EXPERIMENTAL_MODELS))) throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
-        if(!array_key_exists($model, $this->summary_scores)) return null;
+        if($this->state !== static::STATE_ANALYZED) {
+            throw new CommentException('Trying to get span score from a comment that has not been analyzed.');
+        }
+
+        if(!in_array($model, array_merge(Analyzer::MODELS, Analyzer::EXPERIMENTAL_MODELS, Analyzer::NYT_MODELS))) {
+            throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
+        }
+
+        if(!array_key_exists($model, $this->span_scores)) {
+            return null;
+        }
 
         return $this->span_scores[$model];
     }
