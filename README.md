@@ -26,7 +26,7 @@ Pass an instance of a Comment object to the `Analyzer` object's analyze method. 
 After successfully completing the call, the Comment object, which is passed by reference, will be filled out with `SummaryScore` and `SpanScore` objects representing the summary and span scores data returned by the API, respectively. These objects are accessed by calling the Comment object's `getSummaryScore()` or `getSpanScore()` methods with one required argument - one of the attribute models you provided to the Analyzer instance.
 
 #### Example:
-```$php
+```php
 <?php
 require './vendor/autoload.php';
 use bredmor\CommentAnalyzer\Comment;
