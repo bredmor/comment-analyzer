@@ -2,10 +2,10 @@
 namespace bredmor\CommentAnalyzer;
 
 class SpanScore {
-    private $value;
-    private $type;
-    private $begin;
-    private $end;
+    private float $value;
+    private string $type;
+    private int $begin;
+    private int $end;
 
     public function __construct($value, $type, $begin, $end) {
         $this->value = $value;
@@ -13,22 +13,11 @@ class SpanScore {
     }
 
     public function __get($name) {
-        switch($name) {
-            case 'value':
-                return $this->value;
-                break;
-
-            case 'type':
-                return $this->type;
-                break;
-
-            case 'begin':
-                return $this->begin;
-                break;
-
-            case 'end':
-                return $this->end;
-                break;
-        }
+        return match($name) {
+            'value' => $this->value,
+            'type'  => $this->type,
+            'begin' => $this->begin,
+            'end'   => $this->end
+        };
     }
 }

@@ -3,17 +3,17 @@ namespace bredmor\CommentAnalyzer;
 use bredmor\CommentAnalyzer\Exception\CommentException;
 
 class Comment {
-    private $content;
-    private $state = Comment::STATE_CREATED;
-    private $summary_scores;
-    private $span_scores;
+    private string $content;
+    private int $state = Comment::STATE_CREATED;
+    private ?array $summary_scores;
+    private ?array $span_scores;
 
     /**
      * Comment state
      */
-    const STATE_CREATED = 0;
-    const STATE_SUBMITTED = 1;
-    const STATE_ANALYZED = 2;
+    const STATE_CREATED     = 0;
+    const STATE_SUBMITTED   = 1;
+    const STATE_ANALYZED    = 2;
     const STATE = [
         0 => 'STATE_CREATED',
         1 => 'STATE_SUBMITTED',
@@ -46,9 +46,17 @@ class Comment {
      * @throws CommentException
      */
     public function getSummaryScore($model): ?SummaryScore {
-        if($this->state !== static::STATE_ANALYZED) throw new CommentException('Trying to get summary score from a comment that has not been analyzed.');
-        if(!in_array($model, Analyzer::MODELS)) throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
-        if(!array_key_exists($model, $this->summary_scores)) return null;
+        if($this->state !== static::STATE_ANALYZED) {
+            throw new CommentException('Trying to get summary score from a comment that has not been analyzed.');
+        }
+
+        if(!in_array($model, array_merge(Analyzer::MODELS, Analyzer::EXPERIMENTAL_MODELS, Analyzer::NYT_MODELS))) {
+            throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
+        }
+
+        if(!array_key_exists($model, $this->summary_scores)) {
+            return null;
+        }
 
         return $this->summary_scores[$model];
     }
@@ -59,9 +67,17 @@ class Comment {
      * @throws CommentException
      */
     public function getSpanScores($model): ?SpanScore {
-        if($this->state !== static::STATE_ANALYZED) throw new CommentException('Trying to get span score from a comment that has not been analyzed.');
-        if(!in_array($model, array_merge(Analyzer::MODELS, Analyzer::EXPERIMENTAL_MODELS))) throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
-        if(!array_key_exists($model, $this->summary_scores)) return null;
+        if($this->state !== static::STATE_ANALYZED) {
+            throw new CommentException('Trying to get span score from a comment that has not been analyzed.');
+        }
+
+        if(!in_array($model, array_merge(Analyzer::MODELS, Analyzer::EXPERIMENTAL_MODELS, Analyzer::NYT_MODELS))) {
+            throw new CommentException(sprintf('Attribute model %s not found in library.', $model));
+        }
+
+        if(!array_key_exists($model, $this->span_scores)) {
+            return null;
+        }
 
         return $this->span_scores[$model];
     }

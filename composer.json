@@ -3,7 +3,7 @@
     "description": "Google Perspective Comment Analyzer API for PHP",
     "keywords": ["comment analyzer","moderation","perspective","api"],
     "homepage": "https://github.com/bredmor/comment-analyzer",
-    "license": "GPL-3.0-or-later",
+    "license": "MIT",
     "authors": [
         {
             "name": "Morgan Breden",
@@ -11,18 +11,20 @@
         }
     ],
     "require":  {
-        "php": ">=7.3",
-        "guzzlehttp/guzzle": "~6.0",
+        "php": ">=8.0",
+        "guzzlehttp/guzzle": "~7.0",
         "psr/log": "^1.1"
     },
     "require-dev": {
+        "phpunit/phpunit": "^9"
     },
     "autoload": {
         "psr-4": {
-            "bredmor\\CommentAnalyzer\\": "src/"
+            "bredmor\\CommentAnalyzer\\": "src/",
+            "Tests\\": "tests/"
         }
     },
     "scripts": {
-        "test": "./vendor/bin/phpunit --bootstrap vendor/autoload.php --testdox tests"
+        "test": "./vendor/bin/phpunit --bootstrap vendor/autoload.php --stop-on-failure --testdox tests"
     }
 }

@@ -2,8 +2,8 @@
 namespace bredmor\CommentAnalyzer;
 
 class SummaryScore {
-    private $value;
-    private $type;
+    private float $value;
+    private string $type;
 
     public function __construct($value, $type) {
         $this->value = $value;
@@ -11,14 +11,9 @@ class SummaryScore {
     }
 
     public function __get($name) {
-        switch($name) {
-            case 'value':
-                return $this->value;
-                break;
-
-            case 'type':
-                return $this->type;
-                break;
-        }
+        return match($name) {
+            'value'     => $this->value,
+            'type'      => $this->type
+        };
     }
 }
