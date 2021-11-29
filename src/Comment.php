@@ -3,17 +3,17 @@ namespace bredmor\CommentAnalyzer;
 use bredmor\CommentAnalyzer\Exception\CommentException;
 
 class Comment {
-    private $content;
-    private $state = Comment::STATE_CREATED;
-    private $summary_scores;
-    private $span_scores;
+    private string $content;
+    private int $state = Comment::STATE_CREATED;
+    private ?array $summary_scores;
+    private ?array $span_scores;
 
     /**
      * Comment state
      */
-    const STATE_CREATED = 0;
-    const STATE_SUBMITTED = 1;
-    const STATE_ANALYZED = 2;
+    const STATE_CREATED     = 0;
+    const STATE_SUBMITTED   = 1;
+    const STATE_ANALYZED    = 2;
     const STATE = [
         0 => 'STATE_CREATED',
         1 => 'STATE_SUBMITTED',

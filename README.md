@@ -71,7 +71,9 @@ Comment 1 Toxicity rating: 2%
 Comment 2 Toxicity rating: 95%
 ```
 
-Please see the [Perspective API Documentation](https://github.com/conversationai/perspectiveapi/blob/master/api_reference.md) for reference on available attribute models and score meanings.
+Other examples can be found in the [/tests](/tests) directory.
+
+Please see the [Perspective API Documentation](https://developers.perspectiveapi.com/s/docs) for full reference on available attribute models and score meanings.
 
 ## SSL & Other Communication Issues
 Starting with version 1.0, the `Analyzer` constructor accepts `GuzzleHttp\ClientInterface` as an optional 3rd parameter. This allows for
@@ -88,20 +90,15 @@ The Analyzer object accepts an optional PSR-3 compliant `LoggerInterface`, which
 
 CommentAnalyzer supports the following features of the Perspective API:
 
-- Analysis via the TOXICITY, SEVERE_TOXICITY, IDENTITY_ATTACK, INSULT, PROFANITY, THREAT, SEXUALLY_EXPLICIT and FLIRTATION attribute models via `Analyzer::addAttributeModel()`.
+- Analysis of all attribute models in the Production, Experimental and NYT categories via `Analyzer::addAttributeModel()`.
 - Summary Score of provided text via `Comment::getSummaryScore()`.
 - Span Scores of provided text via `Comment::getSpanScore()`.
 - Full language support via [ISO 631-1](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) two-letter codes via `Analyzer::addLanguage()`.
 - Language Autodetection - languages can be explicitly declared via `Analyzer::addLanguage()`.
 
-CommentAnalyzer **does not** yet support the following features of the Perspective API:
-
-- Attribute Model configurations
-- Conversation Context (Not yet used by the Perspective API)
-
 ## Requirements
 
-CommentAnalyzer is tested on PHP `7.3` and later.
+CommentAnalyzer version `2.x` is tested on PHP `8.0` and later.
 
 ## Authors
 
@@ -110,6 +107,14 @@ CommentAnalyzer is tested on PHP `7.3` and later.
 ## Contributing
 
 Pull requests, bug reports and feature requests are welcome.
+
+If you add a new feature, or change an existing feature that does not yet have a test - please add one in your PR!
+
+## Testing
+
+Testing is handled via PHPUnit.
+
+You can run all current tests with `composer run test`.
 
 ## License
 

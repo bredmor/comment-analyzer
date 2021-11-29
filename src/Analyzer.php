@@ -9,25 +9,25 @@ use GuzzleHttp\Client;
 use GuzzleHttp\RequestOptions;
 
 class Analyzer {
-    private $api_key;
-    private $logger;
-    private $client;
-    private $experimental = false;
-    private $nyt = false;
-    private $attribute_models = [];
-    private $languages = []; // By default, the API will try to auto-detect the language used in each comment
+    private string $api_key;
+    private ?LoggerInterface $logger;
+    private ClientInterface|Client $client;
+    private bool $experimental = false;
+    private bool $nyt = false;
+    private array $attribute_models = [];
+    private array $languages = []; // By default, the API will try to auto-detect the language used in each comment
 
     const API_URL = 'https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze';
 
     /**
      * Model Information: https://developers.perspectiveapi.com/s/about-the-api-attributes-and-languages
      */
-    const MODEL_TOXICITY = 'TOXICITY';
+    const MODEL_TOXICITY        = 'TOXICITY';
     const MODEL_SEVERE_TOXICITY = 'SEVERE_TOXICITY';
     const MODEL_IDENTITY_ATTACK = 'IDENTITY_ATTACK';
-    const MODEL_INSULT = 'INSULT';
-    const MODEL_PROFANITY = 'PROFANITY';
-    const MODEL_THREAT = 'THREAT';
+    const MODEL_INSULT          = 'INSULT';
+    const MODEL_PROFANITY       = 'PROFANITY';
+    const MODEL_THREAT          = 'THREAT';
     const MODELS = [
         'TOXICITY',
         'SEVERE_TOXICITY',
@@ -37,21 +37,21 @@ class Analyzer {
         'THREAT'
     ];
 
-    const MODELTYPE_EXPERIMENTAL = 'experimental';
-    const MODELTYPE_NYT = 'nyt';
+    const MODELTYPE_EXPERIMENTAL    = 'experimental';
+    const MODELTYPE_NYT             = 'nyt';
     const OPTIONAL_MODEL_TYPES = [
         self::MODELTYPE_EXPERIMENTAL,
         self::MODELTYPE_NYT
     ];
 
-    const MODEL_TOXICITY_EXPERIMENTAL = 'TOXICITY_EXPERIMENTAL';
-    const MODEL_SEVERE_TOXICITY_EXPERIMENTAL = 'SEVERE_TOXICITY_EXPERIMENTAL';
-    const MODEL_IDENTITY_ATTACK_EXPERIMENTAL = 'IDENTITY_ATTACK_EXPERIMENTAL';
-    const MODEL_INSULT_EXPERIMENTAL = 'INSULT_EXPERIMENTAL';
-    const MODEL_PROFANITY_EXPERIMENTAL = 'PROFANITY_EXPERIMENTAL';
-    const MODEL_THREAT_EXPERIMENTAL = 'THREAT_EXPERIMENTAL';
-    const MODEL_SEXUALLY_EXPLICIT_EXPERIMENTAL = 'SEXUALLY_EXPLICIT';
-    const MODEL_FLIRTATION_EXPERIMENTAL = 'FLIRTATION';
+    const MODEL_TOXICITY_EXPERIMENTAL           = 'TOXICITY_EXPERIMENTAL';
+    const MODEL_SEVERE_TOXICITY_EXPERIMENTAL    = 'SEVERE_TOXICITY_EXPERIMENTAL';
+    const MODEL_IDENTITY_ATTACK_EXPERIMENTAL    = 'IDENTITY_ATTACK_EXPERIMENTAL';
+    const MODEL_INSULT_EXPERIMENTAL             = 'INSULT_EXPERIMENTAL';
+    const MODEL_PROFANITY_EXPERIMENTAL          = 'PROFANITY_EXPERIMENTAL';
+    const MODEL_THREAT_EXPERIMENTAL             = 'THREAT_EXPERIMENTAL';
+    const MODEL_SEXUALLY_EXPLICIT_EXPERIMENTAL  = 'SEXUALLY_EXPLICIT';
+    const MODEL_FLIRTATION_EXPERIMENTAL         = 'FLIRTATION';
     const EXPERIMENTAL_MODELS = [
         'TOXICITY_EXPERIMENTAL',
         'SEVERE_TOXICITY_EXPERIMENTAL',
@@ -63,14 +63,14 @@ class Analyzer {
         'FLIRTATION',
     ];
 
-    const MODEL_NYT_ATTACK_ON_AUTHOR = 'ATTACK_ON_AUTHOR';
-    const MODEL_NYT_ATTACK_ON_COMMENTER = 'ATTACK_ON_COMMENTER';
-    const MODEL_NYT_INCOHERENT = 'INCOHERENT';
-    const MODEL_NYT_INFLAMMATORY = 'INFLAMMATORY';
-    const MODEL_NYT_LIKELY_TO_REJECT = 'LIKELY_TO_REJECT';
-    const MODEL_NYT_OBSCENE = 'OBSCENE';
-    const MODEL_NYT_SPAM = 'SPAM';
-    const MODEL_NYT_UNSUBSTANTIAL = 'UNSUBSTANTIAL';
+    const MODEL_NYT_ATTACK_ON_AUTHOR        = 'ATTACK_ON_AUTHOR';
+    const MODEL_NYT_ATTACK_ON_COMMENTER     = 'ATTACK_ON_COMMENTER';
+    const MODEL_NYT_INCOHERENT              = 'INCOHERENT';
+    const MODEL_NYT_INFLAMMATORY            = 'INFLAMMATORY';
+    const MODEL_NYT_LIKELY_TO_REJECT        = 'LIKELY_TO_REJECT';
+    const MODEL_NYT_OBSCENE                 = 'OBSCENE';
+    const MODEL_NYT_SPAM                    = 'SPAM';
+    const MODEL_NYT_UNSUBSTANTIAL           = 'UNSUBSTANTIAL';
     const NYT_MODELS = [
         'ATTACK_ON_AUTHOR',
         'ATTACK_ON_COMMENTER',
@@ -143,6 +143,7 @@ class Analyzer {
     /**
      * Disables the use of experimental scoring models and removes any enabled experimental scoring models currently
      * being used by the API instance.
+     * @throws AnalyzerException
      */
     public function disableModelType(...$types): void {
         foreach($types as $type) {
@@ -228,7 +229,7 @@ class Analyzer {
 
         $api_data['requestedAttributes'] = [];
         foreach($this->attribute_models as $attribute => $null) {
-            $config = new \stdClass(); //todo suport config for model attributes
+            $config = new \stdClass(); //TODO: support config for model attributes (Is this even a thing in the production version of Perspective?)
             $api_data['requestedAttributes'][$attribute] = $config;
         }
 
@@ -243,17 +244,13 @@ class Analyzer {
             $response = $this->client->post(static::API_URL . '?key=' . $this->api_key, [
                 RequestOptions::JSON => $request_data
             ]);
-        } catch(\Exception $e) {
-            if($this->logger) {
-                $this->logger->critical(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));
-            }
+        } catch(\Throwable $e) {
+            $this->logger?->critical(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));
             throw new AnalyzerException(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));   
         }
 
         if($response->getStatusCode() != 200) {
-            if($this->logger) {
-                $this->logger->critical(sprintf('Call to Perspective API Failed with status code %s. Response: %s',$response->getStatusCode() , $response->getBody()));
-            }
+            $this->logger?->critical(sprintf('Call to Perspective API Failed with status code %s. Response: %s', $response->getStatusCode(), $response->getBody()));
             throw new AnalyzerException(sprintf('Call to Perspective API Failed: HTTP %s', $response->getStatusCode()));
         }
 
