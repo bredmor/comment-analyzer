@@ -1,2 +1,4 @@
 .idea
 vendor
+.phpunit.*
+phpunit.xml
