@@ -7,6 +7,7 @@ class Comment {
     private int $state = Comment::STATE_CREATED;
     private ?array $summary_scores;
     private ?array $span_scores;
+    private string $raw_analysis_body;
 
     /**
      * Comment state
@@ -106,7 +107,9 @@ class Comment {
             throw new CommentException('Trying to set analysis of a comment out of flow.');
         }
 
-        $score_data = json_decode($scores, true);
+        $this->raw_analysis_body = $scores;
+        $score_data = $this->getAnalysisData();
+
         if(!array_key_exists('attributeScores', $score_data)) throw new CommentException('Received malformed score data from Perspective API');
         foreach($score_data['attributeScores'] as $attribute => $data) {
             $summaryScore = new SummaryScore($data['summaryScore']['value'], $data['summaryScore']['type']);
@@ -121,6 +124,31 @@ class Comment {
         }
 
         $this->setState(static::STATE_ANALYZED);
+    }
+
+    /**
+     * @return string
+     * @throws CommentException
+     */
+    public function getRawAnalysisBody(): string
+    {
+        if($this->state !== static::STATE_SUBMITTED) {
+            throw new CommentException('Trying to get analysis of a comment out of flow.');
+        }
+
+        return $this->raw_analysis_body;
+    }
+
+    /**
+     * @throws CommentException
+     */
+    public function getAnalysisData(): array
+    {
+        if($this->state !== static::STATE_SUBMITTED) {
+            throw new CommentException('Trying to get analysis of a comment out of flow.');
+        }
+
+        return json_decode($this->raw_analysis_body, true);
     }
 
 }
