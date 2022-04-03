@@ -132,7 +132,7 @@ class Comment {
      */
     public function getRawAnalysisBody(): string
     {
-        if($this->state !== static::STATE_SUBMITTED) {
+        if($this->state < static::STATE_SUBMITTED) {
             throw new CommentException('Trying to get analysis of a comment out of flow.');
         }
 
@@ -144,7 +144,7 @@ class Comment {
      */
     public function getAnalysisData(): array
     {
-        if($this->state !== static::STATE_SUBMITTED) {
+        if($this->state < static::STATE_SUBMITTED) {
             throw new CommentException('Trying to get analysis of a comment out of flow.');
         }
 
