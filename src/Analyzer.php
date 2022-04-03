@@ -98,7 +98,7 @@ class Analyzer {
      * @param $language - ISO 631-1 two-letter language code
      */
     public function addLanguage(String $language): void {
-        $this->languages[$language] = null;
+        $this->languages[] = $language;
     }
 
     /**
@@ -224,6 +224,7 @@ class Analyzer {
         $api_data['comment'] = ['text' => $comment->getText()];
 
         if(!empty($this->languages)) {
+            $this->languages = array_unique($this->languages);
             $api_data['languages'] = $this->languages;
         }
 
@@ -246,7 +247,7 @@ class Analyzer {
             ]);
         } catch(\Throwable $e) {
             $this->logger?->critical(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));
-            throw new AnalyzerException(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));   
+            throw new AnalyzerException(sprintf('Call to Perspective API Failed: %s', $e->getMessage()));
         }
 
         if($response->getStatusCode() != 200) {
