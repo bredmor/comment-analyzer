@@ -8,8 +8,10 @@ class SpanScore {
     private int $end;
 
     public function __construct($value, $type, $begin, $end) {
-        $this->value = $value;
-        $this->type = $type;
+        $this->value    = $value;
+        $this->type     = $type;
+        $this->begin    = $begin;
+        $this->end      = $end;
     }
 
     public function __get($name) {
