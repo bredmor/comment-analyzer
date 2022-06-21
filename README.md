@@ -92,7 +92,7 @@ CommentAnalyzer supports the following features of the Perspective API:
 
 ## Requirements
 
-CommentAnalyzer version `2.x` is tested on PHP `8.0` and later.
+CommentAnalyzer version `3.x` is tested on PHP `8.0` and later.
 
 ## Authors
 
