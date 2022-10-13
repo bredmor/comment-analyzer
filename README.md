@@ -73,7 +73,7 @@ Comment 2 Toxicity rating: 95%
 
 Other examples can be found in the [/tests](/tests) directory.
 
-Please see the [Perspective API Documentation](https://developers.perspectiveapi.com/s/docs) for full reference on available attribute models and score meanings.
+Please see the [Perspective API Documentation](https://developers.perspectiveapi.com/s/about-the-api) for full reference on available attribute models and score meanings.
 
 ## Error Handling
 Every part of the library that relies on input or proper function use will throw a `CommentException` or `AnalyzerException` as appropriate when an error is encountered.
