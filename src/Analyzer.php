@@ -106,8 +106,8 @@ class Analyzer {
      * @param String $language - ISO 631-1 two-letter language code
      */
     public function removeLanguage(String $language): void {
-        if(in_array($language, $this->languages)) {
-            unset($this->languages[$language]);
+        if(($key = array_search($language, $this->languages)) !== false) {
+            unset($this->languages[$key]);
         }
     }
 
