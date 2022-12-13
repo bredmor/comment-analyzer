@@ -98,7 +98,7 @@ class Analyzer {
      * @param $language - ISO 631-1 two-letter language code
      */
     public function addLanguage(String $language): void {
-        $this->languages[] = $language;
+        $this->languages[$language] = $language;
     }
 
     /**
@@ -106,7 +106,7 @@ class Analyzer {
      * @param String $language - ISO 631-1 two-letter language code
      */
     public function removeLanguage(String $language): void {
-        if(in_array($language, $this->languages)) {
+        if((in_array($language, $this->languages, true)) !== false) {
             unset($this->languages[$language]);
         }
     }
@@ -224,8 +224,7 @@ class Analyzer {
         $api_data['comment'] = ['text' => $comment->getText()];
 
         if(!empty($this->languages)) {
-            $this->languages = array_unique($this->languages);
-            $api_data['languages'] = $this->languages;
+            $api_data['languages'] = array_values($this->languages);
         }
 
         $api_data['requestedAttributes'] = [];
