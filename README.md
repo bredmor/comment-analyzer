@@ -1,3 +1,7 @@
+# Deprecated
+This project is no longer kept up to date. 
+With the introduction of the Google Gemini LLM as part of the Perspective API, I consider the service no longer reliable for use and have no interest in maintaining this API Wrapper.
+
 # CommentAnalyzer
 
 CommentAnalyzer is an API Wrapper for the [Google Perspective Comment Analyzer API](https://www.perspectiveapi.com/#/home)
